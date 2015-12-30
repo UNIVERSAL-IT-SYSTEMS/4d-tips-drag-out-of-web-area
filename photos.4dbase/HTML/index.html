@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+								<style>
+								.sample {
+								height: 20px;
+								width: 40px;
+								border: 1px solid #999;
+								background-color: #ccc;
+								}
+								</style>
+        <title>DEMO</title>
+    </head>
+    <body>
+				
+        <div id="container" />
+								
+								<script src="scripts/jquery-2.1.4.min.js"></script>
+        <script>
+        var api = (function($){
+        
+												function filterEvent(e){
+																e.stopPropagation();
+																e.preventDefault();
+																return false;
+												}
+								
+												$('body')
+												.on('selectstart', filterEvent)
+												.on('drop', filterEvent)
+												.on('dragover', filterEvent)
+												.css({
+																'-webkit-user-select':'none',
+																'-moz-user-select':'none',
+																'-ms-user-select':'none',
+																'-o-user-select':'none',
+																'user-select':'none'
+												});
+								
+            var api = {};
+            
+												api.container$ = $('#container');
+												
+												api.init = function(){
+
+																if (typeof $4d === 'object'){
+																				$4d.init(function(result, error){
+																								if ((!error) && (Array.isArray(result.IDs))){
+																												var html = '';
+																												result.IDs.forEach(function(ID){
+																																var elem = $('<div class="sample" draggable="true">' + ID + '</div>')
+																																.on('dragend', filterEvent)
+																																.on('drag', filterEvent)
+																																.on('click', filterEvent)
+																																.on('dblclick', filterEvent);
+																																
+																																$4d.setup(ID, function(result, error){
+																																				if(!error){
+																																								elem.attr({'data-id':result.id,
+																																												'data-href':result.href,
+																																												'data-path':result.path})
+																																								.on('dragstart', function(e){
+																																												var href = $(this).attr('data-href');
+																																												e.originalEvent.dataTransfer.setData("text/uri-list", href);
+																																												e.originalEvent.dataTransfer.effectAllowed = "copy";
+																																								//				$4d call here will be deferred until the drag is over; not good
+																																								//				return filterEvent(e);
+																																								})
+																																								.on('mouseover', function(e){
+																																												$4d.mouseover(result.id, result.path, function(result, error){
+																																								//				prepare the file for drag and drop here (dragstart/drag/dragend is too late)
+																																												});
+																																								});
+
+																																								api.container$.append('<p>').append(elem).append('</p>');
+																																				}
+																																});
+																																			
+																																
+
+																												});
+																								}
+																			});
+																}
+												};
+												
+            return api;
+            
+        })(jQuery);
+        </script>
+    </body>
+</html>
